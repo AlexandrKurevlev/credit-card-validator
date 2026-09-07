@@ -1,1 +1,11 @@
-.idea
+# Скомпилированные бинарники
+*.exe
+*.dll
+credit-card-validator
+
+# Папки IDE
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
