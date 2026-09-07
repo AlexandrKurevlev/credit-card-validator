@@ -94,6 +94,22 @@ func getUserInput() string {
 	return input
 }
 
+func validateInput(cardNumber string) error {
+	for _, char := range cardNumber {
+		digit := char - '0'
+		if digit < 0 || digit > 9 {
+			return fmt.Errorf("номер должен содержать только цифры")
+		}
+	}
+
+	minLen, maxLen := 13, 19
+	if len(cardNumber) < minLen || len(cardNumber) > maxLen {
+		return fmt.Errorf("номер должен содержать от %d до %d цифр", minLen, maxLen)
+	}
+
+	return nil
+}
+
 func main() {
 	banks, err := loadBankData("./banks.txt")
 	if err != nil {
@@ -110,12 +126,22 @@ func main() {
 			break
 		}
 
+		err = validateInput(cardNumber)
+		if err != nil {
+			fmt.Println("Ошибка:", err)
+			continue
+		}
+
+		if !LuhnCheck(cardNumber) {
+			fmt.Println("Ошибка: не прошел проверку по Луна")
+			continue
+		}
+
 		detectedBank := DetectBank(cardNumber, banks)
 		bankName := "не определен"
 		if detectedBank != nil {
 			bankName = detectedBank.Name
 		}
-		fmt.Println("Валиден по Луне:", LuhnCheck(cardNumber))
 		fmt.Println("Банк:", bankName)
 	}
 }
